@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -11,15 +12,54 @@ import (
 	"gorm.io/gorm"
 )
 
+var dbName string
 var dbUser string
 var dbPass string
+var dbUsersName string
+
+func connectDB(tblName string) (*gorm.DB, error) {
+	var dsn string = fmt.Sprintf("%s:%s@tcp(localhost:3306)/%s?charset=utf8mb4&parseTime=True&loc=UTC", dbUser, dbPass, dbName)
+	var db *gorm.DB
+	var err error
+	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		return nil, err
+	}
+	return db, nil
+}
 
 func createEndpoints(router *gin.Engine) {
 	api := router.Group("/api")
 	{
-		api.GET("/test", func(c *gin.Context) {
+		api.POST("/signup", func(c *gin.Context) {
+			var body struct {
+				Username string `json:"username"`
+				Password string `json:"password"`
+			}
+
+			var err error = c.BindJSON(&body)
+			if err != nil {
+				c.JSON(400, gin.H{"error": "Invalid POST"})
+				return
+			}
+
+			log.Printf("Username: %v", body.Username)
+			log.Printf("Password: %v", body.Password)
+
+			var db *gorm.DB
+			var DbErr error
+			db, DbErr = connectDB(dbUsersName)
+			if DbErr != nil {
+				c.JSON(200, gin.H{
+					"status": fmt.Sprintf("Something went wrong: %s", DbErr),
+				})
+				return
+			}
+
+			//Raw sql here
+
 			c.JSON(200, gin.H{
-				"message": "endpoint registered.",
+				"status": "uhhh",
 			})
 		})
 
@@ -29,17 +69,6 @@ func createEndpoints(router *gin.Engine) {
 			})
 		})
 	}
-}
-
-func connectDB(usr string, pwd string, dbName string) (*gorm.DB, error) {
-	var dsn string = usr + ":" + pwd + "@tcp(localhost:3306)/" + dbName + "?charset=utf8mb4&parseTime=True&loc=Local"
-	var db *gorm.DB
-	var err error
-	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	if err != nil {
-		return nil, err
-	}
-	return db, nil
 }
 
 func renderHTML(router *gin.Engine) {
@@ -81,8 +110,10 @@ func main() {
 		log.Fatal(".env failed to load")
 	}
 
+	dbName = os.Getenv("DB_NAME")
 	dbUser = os.Getenv("DB_USER")
 	dbPass = os.Getenv("DB_PASS")
+	dbUsersName = os.Getenv("DB_USERS_NAME")
 
 	log.Printf("Database username: %v", dbUser)
 	log.Printf("Database password: %v", dbPass)
