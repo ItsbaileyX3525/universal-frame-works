@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 func createEndpoints(router *gin.Engine) {
@@ -24,11 +26,18 @@ func createEndpoints(router *gin.Engine) {
 	}
 }
 
-func main() {
-	router := gin.Default()
+func connectDB(usr string, pwd string, dbName string) (*gorm.DB, error) {
+	var dsn string = usr + ":" + pwd + "@tcp(localhost:3306)/" + dbName + "?charset=utf8mb4&parseTime=True&loc=Local"
+	var db *gorm.DB
+	var err error
+	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		return nil, err
+	}
+	return db, nil
+}
 
-	createEndpoints(router)
-
+func renderHTML(router *gin.Engine) {
 	router.Static("/assets", "./assets")
 
 	router.NoRoute(func(c *gin.Context) {
@@ -59,6 +68,14 @@ func main() {
 			c.File("./public/404.html")
 		}
 	})
+}
+
+func main() {
+	var router *gin.Engine = gin.Default()
+
+	createEndpoints(router)
+	connectDB("")
+	renderHTML(router)
 
 	router.Run(":8080")
 }
