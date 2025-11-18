@@ -1,13 +1,18 @@
 package main
 
 import (
+	"log"
 	"os"
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
+
+var dbUser string
+var dbPass string
 
 func createEndpoints(router *gin.Engine) {
 	api := router.Group("/api")
@@ -71,10 +76,21 @@ func renderHTML(router *gin.Engine) {
 }
 
 func main() {
+	var dotenvErr error = godotenv.Load()
+	if dotenvErr != nil {
+		log.Fatal(".env failed to load")
+	}
+
+	dbUser = os.Getenv("DB_USER")
+	dbPass = os.Getenv("DB_PASS")
+
+	log.Printf("Database username: %v", dbUser)
+	log.Printf("Database password: %v", dbPass)
+
 	var router *gin.Engine = gin.Default()
 
 	createEndpoints(router)
-	connectDB("")
+	//connectDB()
 	renderHTML(router)
 
 	router.Run(":8080")
