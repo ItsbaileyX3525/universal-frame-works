@@ -1,1 +1,35 @@
 /*blank*/
+#navbar {
+    width: 100%;
+    height: 5%;
+    background-color: white;
+    color: rgb(29, 29, 29)
+}
+
+#navbar #contents {
+    background-color: pink;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#navbar #contents p {
+    text-align: center;
+    margin-left: 5px;
+}
+
+#nav-elements a::after {
+    content: " |";
+}
+
+#nav-elements a {
+    text-decoration: none;
+    color: rgb(29, 29, 29);
+}
+
+.navbar-disabled {
+    display: none;
+}

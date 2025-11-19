@@ -16,5 +16,5 @@ async function signup(username, password) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    signup("itsbailey444", "TestPassword123")
+    //signup("itsbailey444", "TestPassword123")
 })
