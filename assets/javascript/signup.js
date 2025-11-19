@@ -17,7 +17,10 @@ async function signup(username, password) {
     if (data.error) {
         console.log(data.error)
     } else {
-        console.log(data.status)
+        console.log(data.message)
+        if (data.status == "success") {
+            window.location.href = "/account"
+        }
     }
 }
 
@@ -26,5 +29,5 @@ document.addEventListener("DOMContentLoaded", async () => {
 })
 
 signupButton.addEventListener("click", () => {
-    signup("itsbailey44444", "TestPassword123")
+    signup("itsbailey44544444", "TestPassword123")
 })

@@ -1,47 +1,19 @@
-async function Logout() {
-    const resp = await fetch("/api/logout", {
-        method: "POST",
-        body: JSON.stringify({
-            "sessionID" : getCookie("session_id")
-        })
-    })
+import { getAuthPromise, logout } from '/assets/javascript/session.js'
 
-    if (!resp.ok) {
-        console.log("Error fetching data")
-        return
-    }
+const logoutButton = document.getElementById("logout-btn")
 
-    const data = await resp.json()
-
-    console.log(data)
-}
-
-async function checkAuth() {
-    const resp = await fetch("/api/requireLogin", {
-        method: "POST",
-    })
-
-    if (!resp.ok) {
-        console.log("Error with fetch request")
-        return
-    }
-
-    const data = await resp.json()
-
-    console.log(data)
-    return data.userID
-}
+logoutButton.addEventListener("click", async () => {
+    await logout()
+    window.location.href = "/login"
+})
 
 document.addEventListener("DOMContentLoaded", async () => {
-    await checkAuth()
-    const userID = await checkAuth()
-    console.log("User ID: " + userID)
-    if (userID == null || !userID) {
+    const auth = await getAuthPromise()
+    console.log("User ID: " + auth)
+    if (auth == null || !auth) {
         console.log("Not logged in")
+        window.location.href = "/login"
     } else {
-        accountNavBarButton.classList.remove("navbar-disabled")
-        signupNavBarButton.classList.add("navbar-disabled")
-        loginNavBarButton.classList.add("navbar-disabled")
-        console.log("Logged in, " + userID)
+       console.log("Logged in, " + auth)
     }
 })

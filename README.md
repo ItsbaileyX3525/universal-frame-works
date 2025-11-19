@@ -6,6 +6,12 @@ A place where we talk everything frame releated (including frameworks yes), feel
 
 Quick run down of the features that are on this site or are going to be on this site.
 
+### GO
+
+This web service is brought to you by the awesome programming language known as GOLANG!
+
+Using goland and gonic (gin) I have created this lovely website so you can rate everything frame related!
+
 ### Comments
 
 Feel free to go to a category on this webpage and discuss your feelings towards certain frame-related items and let others know your true feelings towards it.
@@ -16,12 +22,21 @@ Some things are better than others aren't they? I feel that too (as should every
 
 Give items 1-5 stars and let others know if the frame item is worth even writing about.
 
-### More stuff probably 
+### More stuff probably
 
-Probably accounts most likely
+Probably accounts most likely - Yh accounts
 
 ## Files
 
 There are a nice amount of files that you can find in this repo such as the main.go file where all the magic happens and the "universal_frame_works.sql" where you can see how the database looks like (made it myself :heh:)
 
 the sql file just allows you to quickly add it to your mariaDB, or mysql if you're weird, server
+
+## Tech stack
+
+I don't really know what tech stack even means yet but I think it means the stuff im using for this website.
+
+- Written in GO
+- Using Gonic (Gin)
+- A taste of Gorm with MariaDB
+- Plain HTML+CSS+JS for the frontend

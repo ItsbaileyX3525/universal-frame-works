@@ -22,6 +22,10 @@ async function login(username, password, confirmPassword) {
     const data = await resp.json()
 
     console.log(data)
+    if (data.status == "success") {
+        console.log(data.message)
+        window.location.href = "/account"
+    }
 }
 
 loginButton.addEventListener("click", () => {

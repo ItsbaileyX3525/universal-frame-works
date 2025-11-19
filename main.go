@@ -156,7 +156,8 @@ func createEndpoints(router *gin.Engine) {
 				true,
 			)
 			c.JSON(200, gin.H{
-				"status": "Account Created!",
+				"status":  "success",
+				"message": "Account Created!",
 			})
 		})
 
@@ -255,7 +256,8 @@ func createEndpoints(router *gin.Engine) {
 				true,
 			)
 			c.JSON(200, gin.H{
-				"status": "Login successful!",
+				"status":  "success",
+				"message": "Login successful!",
 			})
 		})
 
@@ -329,6 +331,10 @@ func createEndpoints(router *gin.Engine) {
 			)
 
 			db.Exec("DELETE FROM sessions WHERE ID=?", sessionID)
+			c.JSON(200, gin.H{
+				"status":  "success",
+				"message": "Logged out successfully.",
+			})
 		})
 
 		api.GET("/ping", func(c *gin.Context) {
