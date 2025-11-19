@@ -1,20 +1,30 @@
+const signupButton = document.getElementById("signup-btn")
+
 async function signup(username, password) {
     const response = fetch("/api/signup", {
         method: "POST",
         body: JSON.stringify({ Username: username, Password: password })
     })
 
-    const data = await response
+    const resp = await response
 
-    if (!data.ok) {
+    if (!resp.ok) {
         console.log("Error")
         return
     }
 
-    const realData = await data.json()
-    console.log(realData)
+    const data = await resp.json()
+    if (data.error) {
+        console.log(data.error)
+    } else {
+        console.log(data.status)
+    }
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
     //signup("itsbailey444", "TestPassword123")
+})
+
+signupButton.addEventListener("click", () => {
+    signup("itsbailey44444", "TestPassword123")
 })

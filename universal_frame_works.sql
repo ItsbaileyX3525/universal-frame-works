@@ -49,6 +49,21 @@ CREATE TABLE `items` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `sessions`
+--
+
+CREATE TABLE `sessions` (
+  `ID` CHAR(36) NOT NULL DEFAULT (UUID()),
+  `userID` int(11) NOT NULL,
+  `token` varchar(255) NOT NULL UNIQUE,
+  `expiresAt` timestamp NOT NULL,
+  `creation` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `ratings`
 --
 
@@ -90,6 +105,13 @@ ALTER TABLE `items`
   ADD PRIMARY KEY (`ID`);
 
 --
+-- Indexes for table `sessions`
+--
+ALTER TABLE `sessions`
+  ADD UNIQUE KEY `unique_token` (`token`),
+  ADD KEY `userID` (`userID`);
+
+--
 -- Indexes for table `ratings`
 --
 ALTER TABLE `ratings`
@@ -112,6 +134,12 @@ ALTER TABLE `users`
 --
 ALTER TABLE `comments`
   ADD CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`userID`) REFERENCES `users` (`ID`);
+
+--
+-- Constraints for table `sessions`
+--
+ALTER TABLE `sessions`
+  ADD CONSTRAINT `sessions_ibfk_1` FOREIGN KEY (`userID`) REFERENCES `users` (`ID`);
 
 --
 -- Constraints for table `ratings`

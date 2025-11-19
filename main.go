@@ -1,12 +1,15 @@
 package main
 
 import (
+	"crypto/rand"
 	"database/sql"
+	"encoding/hex"
 	"fmt"
 	"html"
 	"log"
 	"os"
 	"path/filepath"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -32,8 +35,18 @@ func connectDB(tblName string) (*gorm.DB, error) {
 	return db, nil
 }
 
+// Stack overflow
+func generateRandomToken() (string, error) {
+	token := make([]byte, 32)
+	_, err := rand.Read(token)
+	if err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(token), nil
+}
+
 func createEndpoints(router *gin.Engine) {
-	api := router.Group("/api")
+	var api *gin.RouterGroup = router.Group("/api")
 	{
 		api.POST("/signup", func(c *gin.Context) {
 			var body struct {
@@ -97,9 +110,58 @@ func createEndpoints(router *gin.Engine) {
 				return
 			}
 
+			var userID string
+
+			var row2 *sql.Row = db.Raw(
+				"SELECT id FROM users WHERE username = ? LIMIT 1",
+				user,
+			).Row()
+
+			var idRetrieve error = row2.Scan(&userID)
+			if idRetrieve != nil {
+				c.JSON(500, gin.H{"error": "Idek how this happened"})
+				return
+			}
+
+			fmt.Printf("User id: %s", userID)
+
+			var sessionID string
+			var sessionError error
+			sessionID, sessionError = generateRandomToken()
+
+			if sessionError != nil {
+				c.JSON(500, gin.H{"error": "session error"})
+				return
+			}
+
+			result = db.Exec(
+				"INSERT INTO sessions (ID, userID, token, expiresAt) VALUES (?, ?, ?, ?)",
+				sessionID,
+				userID,
+				sessionID,
+				time.Now().Add(time.Hour*24*30),
+			)
+			if result.Error != nil {
+				c.JSON(500, gin.H{"error": "Failed to create session"})
+				return
+			}
+
+			c.SetCookie(
+				"session_id",
+				sessionID,
+				60*60*24*30,
+				"/",
+				"localhost",
+				false,
+				true,
+			)
 			c.JSON(200, gin.H{
 				"status": "Account Created!",
 			})
+		})
+
+		api.POST("/login", func(c *gin.Context) {
+
 		})
 
 		api.GET("/ping", func(c *gin.Context) {
