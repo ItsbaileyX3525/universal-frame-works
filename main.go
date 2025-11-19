@@ -259,6 +259,46 @@ func createEndpoints(router *gin.Engine) {
 			})
 		})
 
+		api.POST("/requireLogin", func(c *gin.Context) {
+			var sessionID string
+			var err error
+			sessionID, err = c.Cookie("session_id")
+			log.Printf("Sesion: %s", sessionID)
+			if err != nil {
+				c.JSON(200, gin.H{
+					"status": "unauthorised",
+				})
+				return
+			}
+
+			var db *gorm.DB
+			var DbErr error
+			db, DbErr = connectDB()
+			if DbErr != nil {
+				c.JSON(500, gin.H{
+					"status": fmt.Sprintf("Something went wrong: %s", DbErr),
+				})
+				return
+			}
+
+			row := db.Raw(
+				"SELECT userID FROM sessions WHERE ID = ?",
+				sessionID,
+			).Row()
+			var userID int
+			if scanErr := row.Scan(&userID); scanErr != nil {
+				c.JSON(200, gin.H{
+					"status": "unauthorised",
+				})
+				return
+			}
+
+			c.JSON(200, gin.H{
+				"status": "authenticated",
+				"userID": userID,
+			})
+		})
+
 		api.POST("/logout", func(c *gin.Context) {
 			var sessionID string
 			var err error
@@ -288,7 +328,7 @@ func createEndpoints(router *gin.Engine) {
 				true,
 			)
 
-			db.Exec("DELETE FROM sessions WHERE session_id=?", sessionID)
+			db.Exec("DELETE FROM sessions WHERE ID=?", sessionID)
 		})
 
 		api.GET("/ping", func(c *gin.Context) {

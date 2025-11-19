@@ -2,16 +2,31 @@ const loginNavBarButton = document.getElementById("navbar-login")
 const signupNavBarButton = document.getElementById("navbar-signup")
 const accountNavBarButton = document.getElementById("navbar-account")
 
+async function checkAuth() {
+    const resp = await fetch("/api/requireLogin", {
+        method: "POST",
+    })
 
-document.addEventListener("DOMContentLoaded", () => {
-    /*const session_id = getCookie("session_id")
-    console.log("Session ID: " + session_id)
-    if (session_id == null || !session_id) {
+    if (!resp.ok) {
+        console.log("Error with fetch request")
+        return
+    }
+
+    const data = await resp.json()
+
+    console.log(data)
+    return data.userID
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+    const userID = await checkAuth()
+    console.log("User ID: " + userID)
+    if (userID == null || !userID) {
         console.log("Not logged in")
     } else {
-        accountButton.classList.remove("navbar-disabled")
+        accountNavBarButton.classList.remove("navbar-disabled")
         signupNavBarButton.classList.add("navbar-disabled")
         loginNavBarButton.classList.add("navbar-disabled")
-        console.log("Logged in, " + session_id)
-    }*/
+        console.log("Logged in, " + userID)
+    }
 })
