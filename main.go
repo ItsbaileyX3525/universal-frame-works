@@ -161,7 +161,102 @@ func createEndpoints(router *gin.Engine) {
 		})
 
 		api.POST("/login", func(c *gin.Context) {
+			var body struct {
+				Username        string `json:"username"`
+				Password        string `json:"password"`
+				ConfirmPassword string `json:"confirmPassword"`
+			}
 
+			var err error = c.BindJSON(&body)
+			if err != nil {
+				c.JSON(400, gin.H{"error": "Invalid POST"})
+				return
+			}
+
+			var db *gorm.DB
+			var DbErr error
+			db, DbErr = connectDB(dbUsersName)
+			if DbErr != nil {
+				c.JSON(200, gin.H{
+					"status": fmt.Sprintf("Something went wrong: %s", DbErr),
+				})
+				return
+			}
+
+			var username string = body.Username
+			var password string = body.Password
+			var confirmPassword string = body.ConfirmPassword
+
+			if password != confirmPassword {
+				c.JSON(200, gin.H{"error": "Password doesn't match"})
+				return
+			}
+
+			var accountDetails struct {
+				userID   int
+				password string
+			}
+
+			var row *sql.Row = db.Raw(
+				"SELECT id, password FROM users WHERE username = ? LIMIT 1",
+				username,
+			).Row()
+
+			var accountCheckErr error = row.Scan(&accountDetails.userID, &accountDetails.password)
+			if accountCheckErr != nil {
+				c.JSON(200, gin.H{"error": "Account doesn't exist."})
+				return
+			}
+
+			var pwdErr error = bcrypt.CompareHashAndPassword([]byte(accountDetails.password), []byte(password))
+			if pwdErr != nil {
+				c.JSON(200, gin.H{"error": "Invalid password"})
+				return
+			}
+
+			var sessionResult *gorm.DB = db.Exec( //Ensures no stale tokens exist
+				"DELETE FROM sessions WHERE userID = ?",
+				accountDetails.userID,
+			)
+
+			if sessionResult.Error != nil {
+				c.JSON(500, gin.H{"error": "Something went wrong deleting the session"})
+				return
+			}
+
+			var sessionID string
+			var sessionError error
+			sessionID, sessionError = generateRandomToken()
+
+			if sessionError != nil {
+				c.JSON(500, gin.H{"error": "session error"})
+				return
+			}
+
+			var result *gorm.DB = db.Exec(
+				"INSERT INTO sessions (ID, userID, token, expiresAt) VALUES (?, ?, ?, ?)",
+				sessionID,
+				accountDetails.userID,
+				sessionID,
+				time.Now().Add(time.Hour*24*30),
+			)
+			if result.Error != nil {
+				c.JSON(500, gin.H{"error": "Failed to create session"})
+				return
+			}
+
+			c.SetCookie(
+				"session_id",
+				sessionID,
+				60*60*24*30,
+				"/",
+				"localhost",
+				false, //Change to true (I think it means https or something)
+				true,
+			)
+			c.JSON(200, gin.H{
+				"status": "Login successful!",
+			})
 		})
 
 		api.GET("/ping", func(c *gin.Context) {
