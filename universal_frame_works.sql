@@ -28,7 +28,7 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `comments` (
-  `ID` int(11) NOT NULL DEFAULT uuid(),
+  `ID` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `userID` int(11) NOT NULL,
   `heading` varchar(100) NOT NULL,
   `content` text NOT NULL,
@@ -42,7 +42,7 @@ CREATE TABLE `comments` (
 --
 
 CREATE TABLE `items` (
-  `ID` uuid NOT NULL DEFAULT uuid(),
+  `ID` CHAR(36) NOT NULL DEFAULT (UUID()),
   `name` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
@@ -53,9 +53,9 @@ CREATE TABLE `items` (
 --
 
 CREATE TABLE `ratings` (
-  `ID` uuid NOT NULL DEFAULT uuid(),
+  `ID` CHAR(36) NOT NULL DEFAULT (UUID()),
   `userID` int(11) NOT NULL,
-  `itemID` uuid NOT NULL,
+  `itemID` CHAR(36) NOT NULL,
   `rating` float NOT NULL,
   `creation` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
@@ -67,7 +67,7 @@ CREATE TABLE `ratings` (
 --
 
 CREATE TABLE `users` (
-  `ID` int(11) NOT NULL DEFAULT uuid(),
+  `ID` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `username` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `creation` date NOT NULL DEFAULT current_timestamp()
@@ -81,7 +81,6 @@ CREATE TABLE `users` (
 -- Indexes for table `comments`
 --
 ALTER TABLE `comments`
-  ADD UNIQUE KEY `unique_comment_id` (`ID`),
   ADD KEY `userID` (`userID`);
 
 --
@@ -102,8 +101,7 @@ ALTER TABLE `ratings`
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`ID`),
-  ADD UNIQUE KEY `unique_user_id` (`ID`);
+  ADD UNIQUE KEY `unique_username` (`username`);
 
 --
 -- Constraints for dumped tables

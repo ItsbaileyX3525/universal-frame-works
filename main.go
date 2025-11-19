@@ -1,10 +1,14 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
+	"html"
 	"log"
 	"os"
 	"path/filepath"
+
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -43,9 +47,6 @@ func createEndpoints(router *gin.Engine) {
 				return
 			}
 
-			log.Printf("Username: %v", body.Username)
-			log.Printf("Password: %v", body.Password)
-
 			var db *gorm.DB
 			var DbErr error
 			db, DbErr = connectDB(dbUsersName)
@@ -56,10 +57,48 @@ func createEndpoints(router *gin.Engine) {
 				return
 			}
 
-			//Raw sql here
+			var pass string = body.Password
+			var user string = body.Username
+
+			var existingID int
+
+			var row *sql.Row = db.Raw(
+				"SELECT id FROM users WHERE username = ? LIMIT 1",
+				user,
+			).Row()
+
+			var accountCheckErr error = row.Scan(&existingID)
+			if accountCheckErr == nil {
+				c.JSON(200, gin.H{"error": "Username in use"})
+				return
+			}
+
+			//Hash
+			var bytes []byte
+			var pwdErr error
+			bytes, pwdErr = bcrypt.GenerateFromPassword([]byte(pass), 14)
+			if pwdErr != nil {
+				c.JSON(500, gin.H{"error": "Password hash failed"})
+				return
+			}
+			//I think this is proper hashing? - Looks like it
+
+			var sanitisedUser string = html.EscapeString(user)
+			var encryptedPass string = string(bytes)
+
+			var result *gorm.DB = db.Exec(
+				"INSERT INTO users (username, password) VALUES (?, ?)",
+				sanitisedUser,
+				encryptedPass,
+			)
+
+			if result.Error != nil {
+				c.JSON(500, gin.H{"error": "DB failed or something"})
+				return
+			}
 
 			c.JSON(200, gin.H{
-				"status": "uhhh",
+				"status": "Account Created!",
 			})
 		})
 
