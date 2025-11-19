@@ -42,7 +42,7 @@ CREATE TABLE `comments` (
 --
 
 CREATE TABLE `items` (
-  `ID` CHAR(36) NOT NULL DEFAULT (UUID()),
+  `ID` varchar(255) NOT NULL DEFAULT (UUID()),
   `name` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
@@ -53,7 +53,7 @@ CREATE TABLE `items` (
 --
 
 CREATE TABLE `sessions` (
-  `ID` CHAR(36) NOT NULL DEFAULT (UUID()),
+  `ID` varchar(255) NOT NULL DEFAULT (UUID()),
   `userID` int(11) NOT NULL,
   `token` varchar(255) NOT NULL UNIQUE,
   `expiresAt` timestamp NOT NULL,
@@ -68,9 +68,9 @@ CREATE TABLE `sessions` (
 --
 
 CREATE TABLE `ratings` (
-  `ID` CHAR(36) NOT NULL DEFAULT (UUID()),
+  `ID` varchar(255) NOT NULL DEFAULT (UUID()),
   `userID` int(11) NOT NULL,
-  `itemID` CHAR(36) NOT NULL,
+  `itemID` varchar(255) NOT NULL,
   `rating` float NOT NULL,
   `creation` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;

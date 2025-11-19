@@ -22,9 +22,11 @@ import (
 var dbName string
 var dbUser string
 var dbPass string
-var dbUsersName string
 
-func connectDB(tblName string) (*gorm.DB, error) {
+// var dbUsersName string
+var websiteURL string
+
+func connectDB() (*gorm.DB, error) {
 	var dsn string = fmt.Sprintf("%s:%s@tcp(localhost:3306)/%s?charset=utf8mb4&parseTime=True&loc=UTC", dbUser, dbPass, dbName)
 	var db *gorm.DB
 	var err error
@@ -62,7 +64,7 @@ func createEndpoints(router *gin.Engine) {
 
 			var db *gorm.DB
 			var DbErr error
-			db, DbErr = connectDB(dbUsersName)
+			db, DbErr = connectDB()
 			if DbErr != nil {
 				c.JSON(200, gin.H{
 					"status": fmt.Sprintf("Something went wrong: %s", DbErr),
@@ -123,8 +125,6 @@ func createEndpoints(router *gin.Engine) {
 				return
 			}
 
-			fmt.Printf("User id: %s", userID)
-
 			var sessionID string
 			var sessionError error
 			sessionID, sessionError = generateRandomToken()
@@ -151,7 +151,7 @@ func createEndpoints(router *gin.Engine) {
 				sessionID,
 				60*60*24*30,
 				"/",
-				"localhost",
+				websiteURL,
 				false,
 				true,
 			)
@@ -175,7 +175,7 @@ func createEndpoints(router *gin.Engine) {
 
 			var db *gorm.DB
 			var DbErr error
-			db, DbErr = connectDB(dbUsersName)
+			db, DbErr = connectDB()
 			if DbErr != nil {
 				c.JSON(200, gin.H{
 					"status": fmt.Sprintf("Something went wrong: %s", DbErr),
@@ -250,13 +250,45 @@ func createEndpoints(router *gin.Engine) {
 				sessionID,
 				60*60*24*30,
 				"/",
-				"localhost",
+				websiteURL,
 				false, //Change to true (I think it means https or something)
 				true,
 			)
 			c.JSON(200, gin.H{
 				"status": "Login successful!",
 			})
+		})
+
+		api.POST("/logout", func(c *gin.Context) {
+			var sessionID string
+			var err error
+			sessionID, err = c.Cookie("session_id")
+			if err != nil {
+				c.AbortWithStatus(401)
+				return
+			}
+
+			var db *gorm.DB
+			var DbErr error
+			db, DbErr = connectDB()
+			if DbErr != nil {
+				c.JSON(200, gin.H{
+					"status": fmt.Sprintf("Something went wrong: %s", DbErr),
+				})
+				return
+			}
+
+			c.SetCookie(
+				"session_id",
+				"",
+				-1,
+				"/",
+				websiteURL,
+				false,
+				true,
+			)
+
+			db.Exec("DELETE FROM sessions WHERE session_id=?", sessionID)
 		})
 
 		api.GET("/ping", func(c *gin.Context) {
@@ -309,15 +341,12 @@ func main() {
 	dbName = os.Getenv("DB_NAME")
 	dbUser = os.Getenv("DB_USER")
 	dbPass = os.Getenv("DB_PASS")
-	dbUsersName = os.Getenv("DB_USERS_NAME")
-
-	log.Printf("Database username: %v", dbUser)
-	log.Printf("Database password: %v", dbPass)
+	//dbUsersName = os.Getenv("DB_USERS_NAME")
+	websiteURL = os.Getenv("WEBSITE_NAME")
 
 	var router *gin.Engine = gin.Default()
 
 	createEndpoints(router)
-	//connectDB()
 	renderHTML(router)
 
 	router.Run(":8080")
