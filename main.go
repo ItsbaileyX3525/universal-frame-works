@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -50,6 +51,59 @@ func generateRandomToken() (string, error) {
 func createEndpoints(router *gin.Engine) {
 	var api *gin.RouterGroup = router.Group("/api")
 	{
+		api.GET("/items", func(c *gin.Context) {
+			var category string = c.Query("category")
+			var page int
+			var parseErr error
+
+			page, parseErr = strconv.Atoi(c.Query("page"))
+			if parseErr != nil {
+				c.JSON(200, gin.H{"status": "Errorsss"})
+				return
+			}
+
+			log.Print(category)
+			log.Print(page)
+
+			var db *gorm.DB
+			var DbErr error
+			db, DbErr = connectDB()
+			if DbErr != nil {
+				c.JSON(200, gin.H{
+					"status": fmt.Sprintf("Something went wrong: %s", DbErr),
+				})
+				return
+			}
+
+			type Item struct {
+				ID   string
+				Name string
+			}
+
+			var limit int = 8
+			var offset int = (page - 1) * limit
+
+			var items []Item
+			var err error
+
+			err = db.Raw(
+				"SELECT id, name FROM items WHERE category = ? LIMIT ? OFFSET ?",
+				category,
+				limit,
+				offset,
+			).Scan(&items).Error
+
+			if err != nil {
+				c.JSON(200, gin.H{"status": "db error", "error": err})
+				return
+			}
+
+			c.JSON(200, gin.H{
+				"status": "success",
+				"items":  items,
+			})
+		})
+
 		api.POST("/signup", func(c *gin.Context) {
 			var body struct {
 				Username string `json:"username"`

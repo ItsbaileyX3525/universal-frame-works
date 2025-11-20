@@ -1,5 +1,9 @@
 # Universal Frame Works
 
+First and foremost. Please vote for this, I spent a lot of time learning and reading the documentation for GO, GIN and GORM. Which, if tracked, would've probably boosted this project to like 23 hours.
+
+So if you could please drop 3 stars or above I would be eternally grateful!
+
 A place where we talk everything frame releated (including frameworks yes), feel free to comment on the website and share your feeling on different frames, vote for the ones you like and so much more!
 
 ## Features
