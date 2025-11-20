@@ -441,10 +441,13 @@ func main() {
 	dbName = os.Getenv("DB_NAME")
 	dbUser = os.Getenv("DB_USER")
 	dbPass = os.Getenv("DB_PASS")
-	//dbUsersName = os.Getenv("DB_USERS_NAME")
 	websiteURL = os.Getenv("WEBSITE_NAME")
 
 	var router *gin.Engine = gin.Default()
+	//Remove
+	//router.Use(func(c *gin.Context) {
+	//c.Writer.Header().Set("Cache-Control", "no-cache")
+	//})
 
 	createEndpoints(router)
 	renderHTML(router)
