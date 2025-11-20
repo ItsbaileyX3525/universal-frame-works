@@ -1,0 +1,26 @@
+@import url("/assets/css/setup.css");
+
+#center-div {
+    background-image: url('/assets/images/404.png');
+    /* Change background image thing so it stretches rather than repeat deadhuzz */
+    font-size: xx-large;
+    height: 95%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#center-div button{
+    margin-top: 25px;
+    background-color: green;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 32px;
+}
