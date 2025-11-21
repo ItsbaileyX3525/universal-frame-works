@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `comments` (
   `ID` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `userID` int(11) NOT NULL,
-  `heading` varchar(100) NOT NULL,
+  `itemID` varchar(255) NOT NULL,
   `content` text NOT NULL,
   `creation` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
@@ -135,7 +135,8 @@ ALTER TABLE `users`
 -- Constraints for table `comments`
 --
 ALTER TABLE `comments`
-  ADD CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`userID`) REFERENCES `users` (`ID`);
+  ADD CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`userID`) REFERENCES `users` (`ID`),
+  ADD CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`itemID`) REFERENCES `items` (`ID`);
 
 --
 -- Constraints for table `sessions`
