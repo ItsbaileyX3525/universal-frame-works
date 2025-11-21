@@ -1,12 +1,15 @@
 const signupButton = document.getElementById("signup-btn")
 
 async function signup(username, password) {
-    const response = fetch("/api/signup", {
+    const response = await fetch("/api/signup", {
         method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
         body: JSON.stringify({ Username: username, Password: password })
     })
 
-    const resp = await response
+    const resp = response
 
     if (!resp.ok) {
         console.log("Error")

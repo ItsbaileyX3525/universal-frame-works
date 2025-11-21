@@ -12,6 +12,10 @@ export function getAuthPromise() {
   return authPromise
 }
 
+export function resetAuthPromise() {
+  authPromise = null
+}
+
 export async function checkAuth() {
     const resp = await fetch("/api/requireLogin", {
         method: "POST",
@@ -48,5 +52,6 @@ export async function logout() {
     console.log(data)
     sessionState.isSessionValid = false
     sessionState.userID = 0
+    resetAuthPromise()
     return data
 }
