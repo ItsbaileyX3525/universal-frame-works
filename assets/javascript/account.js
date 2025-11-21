@@ -1,6 +1,7 @@
 import { getAuthPromise, logout } from '/assets/javascript/session.js'
 
 const logoutButton = document.getElementById("logout-btn")
+let username
 
 logoutButton.addEventListener("click", async () => {
     await logout()
@@ -13,7 +14,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (auth == null || !auth) {
         console.log("Not logged in")
         window.location.href = "/login"
-    } else {
-       console.log("Logged in, " + auth)
+        return
+    }
+
+    username = localStorage.getItem("username") || "None"
+    var usernameAreas = document.querySelectorAll(".username-area")
+    for (let e of usernameAreas) {
+        e.innerText = username
     }
 })

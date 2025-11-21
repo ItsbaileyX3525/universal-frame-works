@@ -19,6 +19,9 @@ async function signup(username, password) {
     } else {
         console.log(data.message)
         if (data.status == "success") {
+            if (data.username) {
+                localStorage.setItem("username", data.username)
+            }
             window.location.href = "/account"
         }
     }

@@ -409,8 +409,9 @@ func createEndpoints(router *gin.Engine) {
 				true,
 			)
 			c.JSON(200, gin.H{
-				"status":  "success",
-				"message": "Account Created!",
+				"status":   "success",
+				"message":  "Account Created!",
+				"username": sanitisedUser,
 			})
 		})
 
@@ -509,8 +510,9 @@ func createEndpoints(router *gin.Engine) {
 				true,
 			)
 			c.JSON(200, gin.H{
-				"status":  "success",
-				"message": "Login successful!",
+				"status":   "success",
+				"message":  "Login successful!",
+				"username": username,
 			})
 		})
 

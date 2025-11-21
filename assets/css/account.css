@@ -1,1 +1,31 @@
 @import url("/assets/css/setup.css");
+
+* {
+    user-select: none;
+}
+
+#app {
+    background-image: linear-gradient(to bottom, rgb(57, 1, 57), rgba(1, 1, 44, 0.518), rgb(0, 0, 0));
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 10px;
+    background-color: rgba(0, 0, 255, 0.521);
+}
+
+#title-area {
+    font-size: xx-large;
+    text-align: center;
+    color: rgb(20, 20, 20);
+}
+
+#logout-btn {
+    width: 40%;
+    align-self: center;
+    margin-top: 22px;
+    background-color: red;
+    color: whitesmoke;
+    border-radius: 16px;
+    padding-block: 8px;
+}

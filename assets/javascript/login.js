@@ -24,6 +24,9 @@ async function login(username, password, confirmPassword) {
     console.log(data)
     if (data.status == "success") {
         console.log(data.message)
+        if (data.username) {
+            localStorage.setItem("username", data.username)
+        }
         window.location.href = "/account"
     }
 }
