@@ -51,6 +51,81 @@ func generateRandomToken() (string, error) {
 func createEndpoints(router *gin.Engine) {
 	var api *gin.RouterGroup = router.Group("/api")
 	{
+		api.POST("/submitMessage", func(c *gin.Context) {
+			//
+		})
+
+		api.POST("/submitRating", func(c *gin.Context) {
+			var body struct {
+				UUID   string `json:"uuid"`
+				Rating int    `json:"rating"`
+			}
+			var err error = c.BindJSON(&body)
+			if err != nil {
+				c.JSON(200, gin.H{
+					"error":  "Invalid POST",
+					"errMsg": err,
+				})
+				return
+			}
+			var sessionID string
+			sessionID, err = c.Cookie("session_id")
+			if err != nil {
+				c.JSON(200, gin.H{
+					"status": "unauthorised",
+				})
+				return
+			}
+
+			var db *gorm.DB
+			var DbErr error
+			db, DbErr = connectDB()
+			if DbErr != nil {
+				c.JSON(200, gin.H{
+					"status": fmt.Sprintf("Something went wrong: %s", DbErr),
+				})
+				return
+			}
+
+			var userID string
+
+			var row *sql.Row = db.Raw(
+				"SELECT userID FROM sessions WHERE token = ?",
+				sessionID,
+			).Row()
+
+			if scanErr := row.Scan(&userID); scanErr != nil {
+				c.JSON(200, gin.H{"error": "Session not found"})
+				return
+			}
+
+			var row2 *sql.Row = db.Raw(
+				"SELECT ID FROM ratings WHERE userID = ? AND itemID = ?",
+				userID,
+				body.UUID,
+			).Row()
+
+			var existingID string
+
+			var accountCheckErr error = row2.Scan(&existingID)
+			if accountCheckErr == nil {
+				c.JSON(200, gin.H{"error": "Rating already exists"})
+				return
+			}
+
+			db.Exec(
+				"INSERT INTO ratings (userID, itemID, rating) VALUES (?, ?, ?)",
+				userID,
+				body.UUID,
+				body.Rating,
+			)
+
+			c.JSON(200, gin.H{
+				"status":  "success",
+				"message": "Rating submitted!",
+			})
+		})
+
 		api.GET("/items", func(c *gin.Context) {
 			var category string = c.Query("category")
 			var page int
@@ -112,7 +187,7 @@ func createEndpoints(router *gin.Engine) {
 
 			var err error = c.BindJSON(&body)
 			if err != nil {
-				c.JSON(400, gin.H{"error": "Invalid POST"})
+				c.JSON(200, gin.H{"error": "Invalid POST"})
 				return
 			}
 
@@ -224,7 +299,7 @@ func createEndpoints(router *gin.Engine) {
 
 			var err error = c.BindJSON(&body)
 			if err != nil {
-				c.JSON(400, gin.H{"error": "Invalid POST"})
+				c.JSON(200, gin.H{"error": "Invalid POST"})
 				return
 			}
 

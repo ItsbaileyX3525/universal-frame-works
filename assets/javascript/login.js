@@ -29,5 +29,5 @@ async function login(username, password, confirmPassword) {
 }
 
 loginButton.addEventListener("click", () => {
-    login("itsbailey44444", "TestPassword123", "TestPassword123")
+    login("itsbailey444", "TestPassword123", "TestPassword123")
 })

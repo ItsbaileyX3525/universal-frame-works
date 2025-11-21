@@ -47,6 +47,24 @@ async function fetchItems(category, onPage) {
     }
 }
 
+async function submitRating(uuid, score) {
+    const resp = await fetch('/api/submitRating', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            "uuid" : uuid,
+            "rating" : score
+        })
+    })
+}
+
+async function openModal(uuid) {
+    console.log(uuid);
+    await submitRating(uuid, 5)
+}
+
 async function switchTab(tabName) {
     selectionContainer.innerHTML = ""
     switch (tabName) {
@@ -65,7 +83,7 @@ async function switchTab(tabName) {
                 div.appendChild(p)
 
                 div.addEventListener("click", () => {
-                    console.log(div.getAttribute("uuid"))
+                    openModal(div.getAttribute("uuid"))
                 })
                 selectionContainer.appendChild(div)
             }

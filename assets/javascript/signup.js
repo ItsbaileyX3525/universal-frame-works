@@ -29,5 +29,5 @@ document.addEventListener("DOMContentLoaded", async () => {
 })
 
 signupButton.addEventListener("click", () => {
-    signup("itsbailey44544444", "TestPassword123")
+    signup("itsbailey444", "TestPassword123")
 })
