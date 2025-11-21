@@ -58,40 +58,52 @@ async function submitRating(uuid, score) {
             "rating" : score
         })
     })
+
+    if (!resp.ok) {
+        console.log("Something wrong with the request")
+        return
+    }
+
+    const data = await resp.json()
+
+    if (data.status == "success") {
+        console.log(data.message)
+    } else {
+        console.log(data)
+    }
 }
 
 async function openModal(uuid) {
     console.log(uuid);
-    await submitRating(uuid, 5)
+    await submitRating(uuid, 3)
+}
+
+function createCards(items) {
+    for (let e of items) {
+        const div = document.createElement("div")
+        const p = document.createElement("p")
+        div.id = "frame-card"
+        console.log(e)
+        div.style.backgroundImage = `url('${e.ImagePath}')`
+        p.id = "center"
+        div.setAttribute("uuid", e.ID)
+        p.innerText = e.Name
+        div.appendChild(p)
+
+        div.addEventListener("click", () => {
+            openModal(div.getAttribute("uuid"))
+        })
+        selectionContainer.appendChild(div)
+    }
 }
 
 async function switchTab(tabName) {
     selectionContainer.innerHTML = ""
-    switch (tabName) {
-        case "development":
-            console.log("Switching to development tab")
-            tabOpen = tabName
-            const items = await fetchItems(tabOpen, onPage)
-            console.log(items)
-            for (let e of items) {
-                const div = document.createElement("div")
-                const p = document.createElement("p")
-                div.id = "frame-card"
-                p.id = "center"
-                div.setAttribute("uuid", e.ID)
-                p.innerText = e.Name
-                div.appendChild(p)
-
-                div.addEventListener("click", () => {
-                    openModal(div.getAttribute("uuid"))
-                })
-                selectionContainer.appendChild(div)
-            }
-            break;
-    
-        default:
-            break;
-    }
+    let items
+    console.log(`Switching to ${tabName} tab`)
+    tabOpen = tabName
+    items = await fetchItems(tabOpen, onPage)
+    createCards(items)
 }
 
 function registerDivs() {

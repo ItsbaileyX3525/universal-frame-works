@@ -1,0 +1,24 @@
+INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('AstroJS', 'development', '/assets/images/development/AstroJS.png');
+INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('React', 'development', '/assets/images/development/React.png');
+INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Bootstrap', 'development', '/assets/images/development/Bootstrap.png');
+INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('AngularJS', 'development', '/assets/images/development/AngularJS.png');
+INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('JQuery', 'development', '/assets/images/development/JQuery.png');
+INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Svelte', 'development', '/assets/images/development/Svelte.png');
+INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Flask', 'development', '/assets/images/development/Flask.png');
+INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Next.js', 'development', '/assets/images/development/NextJS.png');
+INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Express.js', 'development', '/assets/images/development/ExpressJS.png');
+INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Django', 'development', '/assets/images/development/Django.png');
+INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('ASP.NET', 'development', '/assets/images/development/ASPNET.png');
+INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Vue', 'development', '/assets/images/development/Vue.png');
+INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Ruby on Rails', 'development', '/assets/images/development/RubyOnRails.png');
+
+INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Steel Frame', 'construction', '/assets/images/construction/SteelFrame.png');
+INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Timber Frame', 'construction', '/assets/images/construction/TimberFrame.png');
+INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Window Frame', 'construction', '/assets/images/construction/WindowFrame.png');
+INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Door Frame', 'construction', '/assets/images/construction/DoorFrame.png');
+INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Concrete Frame', 'construction', '/assets/images/construction/ConcreteFrame.png');
+INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Wall Frame', 'construction', '/assets/images/construction/WallFrame.png');
+INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Portal Frame', 'construction', '/assets/images/construction/PortalFrame.png');
+INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Timber Stud Wall Frame', 'construction', '/assets/images/construction/TimberStudWallFrame.png');
+INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Steel Stud Wall Frame', 'construction', '/assets/images/construction/SteelStudWallFrame.png');
+INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Truss Frame', 'construction', '/assets/images/construction/TrussFrame.png');

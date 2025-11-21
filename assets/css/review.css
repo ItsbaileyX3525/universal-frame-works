@@ -2,6 +2,8 @@
 
 * {
     user-select: none;
+    scrollbar-color: rgba(72, 6, 253, 0.772) rgb(34, 34, 34);
+    scrollbar-width: thin;
 }
 
 #app {
@@ -41,7 +43,6 @@
 }
 
 #frame-card {
-    background-image: url('/assets/images/astro.png');
     background-repeat: no-repeat;
     background-size: 100% 100%;
     background-position: center;

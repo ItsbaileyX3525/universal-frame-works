@@ -106,24 +106,36 @@ func createEndpoints(router *gin.Engine) {
 			).Row()
 
 			var existingID string
+			var ratingExists bool = false
 
 			var accountCheckErr error = row2.Scan(&existingID)
 			if accountCheckErr == nil {
-				c.JSON(200, gin.H{"error": "Rating already exists"})
-				return
+				ratingExists = true
 			}
 
-			db.Exec(
-				"INSERT INTO ratings (userID, itemID, rating) VALUES (?, ?, ?)",
-				userID,
-				body.UUID,
-				body.Rating,
-			)
-
-			c.JSON(200, gin.H{
-				"status":  "success",
-				"message": "Rating submitted!",
-			})
+			if ratingExists {
+				db.Exec(
+					"UPDATE ratings SET rating = ? WHERE itemID = ? AND userID = ?",
+					body.Rating,
+					body.UUID,
+					userID,
+				)
+				c.JSON(200, gin.H{
+					"status":  "success",
+					"message": "Rating updated!",
+				})
+			} else {
+				db.Exec(
+					"INSERT INTO ratings (userID, itemID, rating) VALUES (?, ?, ?)",
+					userID,
+					body.UUID,
+					body.Rating,
+				)
+				c.JSON(200, gin.H{
+					"status":  "success",
+					"message": "Rating submitted!",
+				})
+			}
 		})
 
 		api.GET("/items", func(c *gin.Context) {
@@ -151,21 +163,17 @@ func createEndpoints(router *gin.Engine) {
 			}
 
 			type Item struct {
-				ID   string
-				Name string
+				ID        string
+				Name      string
+				ImagePath string
 			}
-
-			var limit int = 8
-			var offset int = (page - 1) * limit
 
 			var items []Item
 			var err error
 
 			err = db.Raw(
-				"SELECT id, name FROM items WHERE category = ? LIMIT ? OFFSET ?",
+				"SELECT id, name, imagePath FROM items WHERE category = ?",
 				category,
-				limit,
-				offset,
 			).Scan(&items).Error
 
 			if err != nil {
@@ -459,7 +467,7 @@ func createEndpoints(router *gin.Engine) {
 				true,
 			)
 
-			db.Exec("DELETE FROM sessions WHERE ID=?", sessionID)
+			db.Exec("DELETE FROM sessions WHERE ID = ?", sessionID)
 			c.JSON(200, gin.H{
 				"status":  "success",
 				"message": "Logged out successfully.",
