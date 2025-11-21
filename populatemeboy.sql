@@ -15,10 +15,10 @@ INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Ruby on Rails', 
 INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Steel Frame', 'construction', '/assets/images/construction/SteelFrame.png');
 INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Timber Frame', 'construction', '/assets/images/construction/TimberFrame.png');
 INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Window Frame', 'construction', '/assets/images/construction/WindowFrame.png');
-INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Door Frame', 'construction', '/assets/images/construction/DoorFrame.png');
+INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Door Frame', 'construction', '/assets/images/construction/DoorFrame.webp');
 INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Concrete Frame', 'construction', '/assets/images/construction/ConcreteFrame.png');
 INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Wall Frame', 'construction', '/assets/images/construction/WallFrame.png');
 INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Portal Frame', 'construction', '/assets/images/construction/PortalFrame.png');
 INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Timber Stud Wall Frame', 'construction', '/assets/images/construction/TimberStudWallFrame.png');
-INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Steel Stud Wall Frame', 'construction', '/assets/images/construction/SteelStudWallFrame.png');
+INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Steel Stud Wall Frame', 'construction', '/assets/images/construction/SteelStudWallFrame.webp');
 INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Truss Frame', 'construction', '/assets/images/construction/TrussFrame.png');

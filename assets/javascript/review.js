@@ -307,6 +307,11 @@ function createCards(items) {
         div.style.backgroundImage = `url('${e.ImagePath}')`
         div.setAttribute("uuid", e.ID)
 
+        const nameDiv = document.createElement("div")
+        nameDiv.className = "card-name"
+        nameDiv.textContent = e.Name
+        div.appendChild(nameDiv)
+
         if (e.AvgRating !== undefined && e.AvgRating > 0) {
             const ratingDiv = document.createElement("div")
             ratingDiv.className = "card-rating"

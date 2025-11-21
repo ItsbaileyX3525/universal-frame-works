@@ -673,6 +673,7 @@ func main() {
 	dbUser = os.Getenv("DB_USER")
 	dbPass = os.Getenv("DB_PASS")
 	websiteURL = os.Getenv("WEBSITE_NAME")
+	var PORT string = os.Getenv("PORT")
 
 	var router *gin.Engine = gin.Default()
 	//Remove
@@ -683,5 +684,5 @@ func main() {
 	createEndpoints(router)
 	renderHTML(router)
 
-	router.Run(":8080")
+	router.Run(fmt.Sprintf(":%s", PORT))
 }
