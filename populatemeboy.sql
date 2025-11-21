@@ -1,3 +1,7 @@
+SET FOREIGN_KEY_CHECKS=0;
+DELETE FROM `items`;
+SET FOREIGN_KEY_CHECKS=1;
+
 INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('AstroJS', 'development', '/assets/images/development/AstroJS.png');
 INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('React', 'development', '/assets/images/development/React.png');
 INSERT INTO `items` ( `name`, `category`, `imagePath`) VALUES ('Bootstrap', 'development', '/assets/images/development/Bootstrap.png');

@@ -1,0 +1,300 @@
+package main
+
+import (
+	"database/sql"
+	"html"
+	"log"
+	"time"
+
+	"golang.org/x/crypto/bcrypt"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
+func handleSignup(c *gin.Context) {
+	var body struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+
+	var err error = c.BindJSON(&body)
+	if err != nil {
+		c.JSON(200, gin.H{"error": "Invalid POST"})
+		return
+	}
+
+	var db *gorm.DB
+	var DbErr error
+	db, DbErr = connectDB()
+	if DbErr != nil {
+		c.JSON(200, gin.H{
+			"status": "Something went wrong: " + DbErr.Error(),
+		})
+		return
+	}
+
+	var pass string = body.Password
+	var user string = body.Username
+
+	var existingID int
+
+	var row *sql.Row = db.Raw(
+		"SELECT id FROM users WHERE username = ? LIMIT 1",
+		user,
+	).Row()
+
+	var accountCheckErr error = row.Scan(&existingID)
+	if accountCheckErr == nil {
+		c.JSON(200, gin.H{"error": "Username in use"})
+		return
+	}
+
+	var bytes []byte
+	var pwdErr error
+	bytes, pwdErr = bcrypt.GenerateFromPassword([]byte(pass), 14)
+	if pwdErr != nil {
+		c.JSON(500, gin.H{"error": "Password hash failed"})
+		return
+	}
+
+	var sanitisedUser string = html.EscapeString(user)
+	var encryptedPass string = string(bytes)
+
+	var result *gorm.DB = db.Exec(
+		"INSERT INTO users (username, password) VALUES (?, ?)",
+		sanitisedUser,
+		encryptedPass,
+	)
+
+	if result.Error != nil {
+		c.JSON(500, gin.H{"error": "DB failed or something"})
+		return
+	}
+
+	var userID string
+
+	var row2 *sql.Row = db.Raw(
+		"SELECT id FROM users WHERE username = ? LIMIT 1",
+		user,
+	).Row()
+
+	var idRetrieve error = row2.Scan(&userID)
+	if idRetrieve != nil {
+		c.JSON(500, gin.H{"error": "Idek how this happened"})
+		return
+	}
+
+	var sessionID string
+	var sessionError error
+	sessionID, sessionError = generateRandomToken()
+
+	if sessionError != nil {
+		c.JSON(500, gin.H{"error": "session error"})
+		return
+	}
+
+	result = db.Exec(
+		"INSERT INTO sessions (ID, userID, token, expiresAt) VALUES (?, ?, ?, ?)",
+		sessionID,
+		userID,
+		sessionID,
+		time.Now().Add(time.Hour*24*30),
+	)
+	if result.Error != nil {
+		c.JSON(500, gin.H{"error": "Failed to create session"})
+		return
+	}
+
+	c.SetCookie(
+		"session_id",
+		sessionID,
+		60*60*24*30,
+		"/",
+		websiteURL,
+		false,
+		true,
+	)
+	c.JSON(200, gin.H{
+		"status":   "success",
+		"message":  "Account Created!",
+		"username": sanitisedUser,
+	})
+}
+
+func handleLogin(c *gin.Context) {
+	var body struct {
+		Username        string `json:"username"`
+		Password        string `json:"password"`
+		ConfirmPassword string `json:"confirmPassword"`
+	}
+
+	var err error = c.BindJSON(&body)
+	if err != nil {
+		c.JSON(200, gin.H{"error": "Invalid POST"})
+		return
+	}
+
+	var db *gorm.DB
+	var DbErr error
+	db, DbErr = connectDB()
+	if DbErr != nil {
+		c.JSON(200, gin.H{
+			"status": "Something went wrong: " + DbErr.Error(),
+		})
+		return
+	}
+
+	var username string = body.Username
+	var password string = body.Password
+	var confirmPassword string = body.ConfirmPassword
+
+	if password != confirmPassword {
+		c.JSON(200, gin.H{"error": "Password doesn't match"})
+		return
+	}
+
+	var accountDetails struct {
+		userID   int
+		password string
+	}
+
+	var row *sql.Row = db.Raw(
+		"SELECT id, password FROM users WHERE username = ? LIMIT 1",
+		username,
+	).Row()
+
+	var accountCheckErr error = row.Scan(&accountDetails.userID, &accountDetails.password)
+	if accountCheckErr != nil {
+		c.JSON(200, gin.H{"error": "Account doesn't exist."})
+		return
+	}
+
+	var pwdErr error = bcrypt.CompareHashAndPassword([]byte(accountDetails.password), []byte(password))
+	if pwdErr != nil {
+		c.JSON(200, gin.H{"error": "Invalid password"})
+		return
+	}
+
+	var sessionResult *gorm.DB = db.Exec(
+		"DELETE FROM sessions WHERE userID = ?",
+		accountDetails.userID,
+	)
+
+	if sessionResult.Error != nil {
+		c.JSON(500, gin.H{"error": "Something went wrong deleting the session"})
+		return
+	}
+
+	var sessionID string
+	var sessionError error
+	sessionID, sessionError = generateRandomToken()
+
+	if sessionError != nil {
+		c.JSON(500, gin.H{"error": "session error"})
+		return
+	}
+
+	var result *gorm.DB = db.Exec(
+		"INSERT INTO sessions (ID, userID, token, expiresAt) VALUES (?, ?, ?, ?)",
+		sessionID,
+		accountDetails.userID,
+		sessionID,
+		time.Now().Add(time.Hour*24*30),
+	)
+	if result.Error != nil {
+		c.JSON(500, gin.H{"error": "Failed to create session"})
+		return
+	}
+
+	c.SetCookie(
+		"session_id",
+		sessionID,
+		60*60*24*30,
+		"/",
+		websiteURL,
+		false,
+		true,
+	)
+	c.JSON(200, gin.H{
+		"status":   "success",
+		"message":  "Login successful!",
+		"username": username,
+	})
+}
+
+func handleRequireLogin(c *gin.Context) {
+	var sessionID string
+	var err error
+	sessionID, err = c.Cookie("session_id")
+	log.Printf("Sesion: %s", sessionID)
+	if err != nil {
+		c.JSON(200, gin.H{
+			"status": "unauthorised",
+		})
+		return
+	}
+
+	var db *gorm.DB
+	var DbErr error
+	db, DbErr = connectDB()
+	if DbErr != nil {
+		c.JSON(500, gin.H{
+			"status": "Something went wrong: " + DbErr.Error(),
+		})
+		return
+	}
+
+	row := db.Raw(
+		"SELECT userID FROM sessions WHERE ID = ?",
+		sessionID,
+	).Row()
+	var userID int
+	if scanErr := row.Scan(&userID); scanErr != nil {
+		c.JSON(200, gin.H{
+			"status": "unauthorised",
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"status": "authenticated",
+		"userID": userID,
+	})
+}
+
+func handleLogout(c *gin.Context) {
+	var sessionID string
+	var err error
+	sessionID, err = c.Cookie("session_id")
+	if err != nil {
+		c.AbortWithStatus(401)
+		return
+	}
+
+	var db *gorm.DB
+	var DbErr error
+	db, DbErr = connectDB()
+	if DbErr != nil {
+		c.JSON(200, gin.H{
+			"status": "Something went wrong: " + DbErr.Error(),
+		})
+		return
+	}
+
+	c.SetCookie(
+		"session_id",
+		"",
+		-1,
+		"/",
+		websiteURL,
+		false,
+		true,
+	)
+
+	db.Exec("DELETE FROM sessions WHERE ID = ?", sessionID)
+	c.JSON(200, gin.H{
+		"status":  "success",
+		"message": "Logged out successfully.",
+	})
+}
