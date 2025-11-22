@@ -1,11 +1,6 @@
-const loginButton = document.getElementById("login-btn")
+const loginForm = document.getElementById("login-form")
 
-async function login(username, password, confirmPassword) {
-    if (password !== confirmPassword) {
-        console.log("Passwords don't match")
-        return
-    }
-
+async function login(username, password) {
     const resp = await fetch('/api/login', {
         method: "POST",
         headers: {
@@ -14,27 +9,35 @@ async function login(username, password, confirmPassword) {
         body: JSON.stringify({
             "username" : username,
             "password" : password,
-            "confirmPassword" : confirmPassword,
         })
     })
 
     if (!resp.ok) {
-        console.log("Something wrong")
+        console.log("Login failed. Please check your credentials.")
         return
     }
 
     const data = await resp.json()
 
-    console.log(data)
     if (data.status == "success") {
-        console.log(data.message)
         if (data.username) {
             localStorage.setItem("username", data.username)
         }
         window.location.href = "/account"
+    } else {
+        console.log(data.message || "Login failed")
     }
 }
 
-loginButton.addEventListener("click", () => {
-    login("itsbailey444", "TestPassword123", "TestPassword123")
+loginForm.addEventListener("submit", (e) => {
+    e.preventDefault()
+    const username = document.getElementById("username").value.trim()
+    const password = document.getElementById("password").value
+
+    if (!username || !password) {
+        console.log("Please fill in all fields")
+        return
+    }
+
+    login(username, password)
 })

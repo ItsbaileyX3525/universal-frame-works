@@ -1,1 +1,93 @@
 @import url("/assets/css/setup.css");
+
+.auth-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.auth-box {
+    background-color: rgb(35, 35, 35);
+    border: 2px solid #ff69b4;
+    border-radius: 8px;
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+}
+
+.auth-box h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #ff69b4;
+    font-size: 28px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: rgb(243, 243, 243);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid rgb(100, 100, 100);
+    border-radius: 4px;
+    background-color: rgb(45, 45, 45);
+    color: rgb(243, 243, 243);
+    font-family: monocraft;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #ff69b4;
+    box-shadow: 0 0 5px rgba(255, 105, 180, 0.3);
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #ff69b4;
+    color: rgb(29, 29, 29);
+    border: none;
+    border-radius: 4px;
+    font-family: monocraft;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.submit-btn:hover {
+    background-color: #ff1493;
+}
+
+.submit-btn:active {
+    transform: scale(0.98);
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 25px;
+    color: rgb(180, 180, 180);
+    font-size: 14px;
+}
+
+.auth-footer a {
+    color: #ff69b4;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
