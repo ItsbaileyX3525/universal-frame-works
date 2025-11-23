@@ -6,6 +6,10 @@ So if you could please drop 3 stars or above I would be eternally grateful!
 
 A place where we talk everything frame releated (including frameworks yes), feel free to comment on the website and share your feeling on different frames, vote for the ones you like and so much more!
 
+## To reviewers/stonemasons
+
+When navigating the site please check the console log for outputs, I couldn't be arsed setting up error messages on each page, so all errors or tidbits like password being too short gets printed to the console.
+
 ## Features
 
 Quick run down of the features that are on this site or are going to be on this site.
