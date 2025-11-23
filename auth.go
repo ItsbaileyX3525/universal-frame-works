@@ -112,7 +112,7 @@ func handleSignup(c *gin.Context) {
 		60*60*24*30,
 		"/",
 		websiteURL,
-		false,
+		cookieSecure,
 		true,
 	)
 	c.JSON(200, gin.H{
@@ -213,7 +213,7 @@ func handleLogin(c *gin.Context) {
 		60*60*24*30,
 		"/",
 		websiteURL,
-		false,
+		cookieSecure,
 		true,
 	)
 	c.JSON(200, gin.H{
@@ -288,7 +288,7 @@ func handleLogout(c *gin.Context) {
 		-1,
 		"/",
 		websiteURL,
-		false,
+		cookieSecure,
 		true,
 	)
 

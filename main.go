@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -14,6 +15,7 @@ var dbName string
 var dbUser string
 var dbPass string
 var websiteURL string
+var cookieSecure bool
 
 func main() {
 	var dotenvErr error = godotenv.Load()
@@ -27,6 +29,9 @@ func main() {
 	websiteURL = os.Getenv("WEBSITE_NAME")
 	var PORT string = os.Getenv("PORT")
 	var useTLS bool = true
+
+	cookieSecureStr := os.Getenv("COOKIE_SECURE")
+	cookieSecure, _ = strconv.ParseBool(cookieSecureStr)
 
 	var router *gin.Engine = gin.Default()
 
